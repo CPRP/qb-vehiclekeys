@@ -499,7 +499,8 @@ function AttemptPoliceAlert(type)
             chance = Config.PoliceNightAlertChance
         end
         if math.random() <= chance then
-           TriggerServerEvent('police:server:policeAlert', 'Vehicle theft in progress')
+            local vehicle = QBCore.Functions.GetClosestVehicle()
+            exports['qb-dispatch']:VehicleTheft(vehicle)
         end
         AlertSend = true
         SetTimeout(Config.AlertCooldown, function()
