@@ -500,7 +500,7 @@ function AttemptPoliceAlert(type)
         end
         if math.random() <= chance then
             local vehicle = QBCore.Functions.GetClosestVehicle()
-            exports['qb-dispatch']:VehicleTheft(vehicle)
+            exports['ps-dispatch']:VehicleTheft(vehicle)
         end
         AlertSend = true
         SetTimeout(Config.AlertCooldown, function()
