@@ -201,6 +201,19 @@ RegisterNetEvent('lockpicks:UseLockpick', function(isAdvanced)
     LockpickDoor(isAdvanced)
 end)
 
+RegisterNetEvent('vehiclekeys:client:PoliceUnlock')
+AddEventHandler('vehiclekeys:client:PoliceUnlock', function()
+    local ped = PlayerPedId()
+    local pos = GetEntityCoords(ped)
+    local vehicle = QBCore.Functions.GetClosestVehicle(pos)
+    SetVehicleDoorsLocked(vehicle, 0)
+    SetVehicleAlarm(vehicle, false)
+    SetVehicleDoorsLockedForAllPlayers(vehicle, false)
+    lockpicked = true
+    QBCore.Functions.Notify('Opened Door!', 'success')
+    TriggerEvent('vehiclekeys:client:SetOwner', GetVehicleNumberPlateText(vehicle))
+
+end)
 
 -- Backwards Compatibility ONLY -- Remove at some point --
 RegisterNetEvent('vehiclekeys:client:SetOwner', function(plate)
