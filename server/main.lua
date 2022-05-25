@@ -57,7 +57,7 @@ function GiveKeys(id, plate)
     if not VehicleList[plate] then VehicleList[plate] = {} end
     VehicleList[plate][citizenid] = true
     
-    TriggerClientEvent('QBCore:Notify', id, "You get keys to the vehicle!")
+    TriggerClientEvent('QBCore:Notify', id, "You have the keys to the vehicle!")
     TriggerClientEvent('qb-vehiclekeys:client:AddKeys', id, plate)
 end
 
@@ -79,7 +79,7 @@ function HasKeys(id, plate)
     return false
 end
 
-QBCore.Commands.Add("engine", "Toggle Engine", {}, false, function(source)
+QBCore.Commands.Add("engine", "Toggle Engine", {}, false, function(source, args)
 	TriggerClientEvent('qb-vehiclekeys:client:ToggleEngine', source)
 end)
 
@@ -90,7 +90,7 @@ end)
 
 QBCore.Commands.Add("addkeys", "Adds keys to a vehicle for someone.", {{name = "id", help = "Player ID"}, {name = "plate", help = "Plate"}}, true, function(source, args)
 	local src = source
-    if not args[1] or not args[2] then
+    if not args[1] or not args[2] then 
         TriggerClientEvent('QBCore:Notify', src, 'Fill out the player ID and Plate arguments.')
         return
     end
@@ -99,9 +99,35 @@ end, 'admin')
 
 QBCore.Commands.Add("removekeys", "Remove keys to a vehicle for someone.", {{name = "id", help = "Player ID"}, {name = "plate", help = "Plate"}}, true, function(source, args)
 	local src = source
-    if not args[1] or not args[2] then
+    if not args[1] or not args[2] then 
         TriggerClientEvent('QBCore:Notify', src, 'Fill out the player ID and Plate arguments.')
         return
     end
     RemoveKeys(tonumber(args[1]), args[2])
 end, 'admin')
+
+
+----------------
+--CONDOR ROMPE--
+----------------
+RegisterNetEvent('chiudi', function(plate)
+	MySQL.Async.execute('UPDATE player_vehicles SET chiusa = 1 WHERE `plate` = @plate', {['plate'] = plate })
+end)
+
+RegisterNetEvent('apri', function(plate)
+	MySQL.Async.execute('UPDATE player_vehicles SET chiusa = 0 WHERE `plate` = @plate', { ['plate'] = plate })
+end)
+
+local aperta = false
+RegisterNetEvent('controlla', function(plate)
+	MySQL.Async.fetchScalar('SELECT `chiusa` FROM `player_vehicles` WHERE `plate` = @plate', { ['plate'] = plate }, function(status)
+        if status == 0 then
+            aperta = true
+        else
+            print(1)
+            aperta = false
+        end
+    end)
+    print(aperta)
+    TriggerClientEvent('cambia-status',aperta)
+end)
