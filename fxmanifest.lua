@@ -5,11 +5,11 @@ description 'QB-VehicleKeys'
 version '1.0.0'
 
 shared_script 'config.lua'
-client_script {
+client_scripts {
     '@oxmysql/lib/MySQL.lua',
     'client/main.lua'
     }
-server_script {
+server_scripts {
     '@oxmysql/lib/MySQL.lua'
     'server/main.lua'
     }
