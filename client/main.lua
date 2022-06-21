@@ -44,7 +44,7 @@ CreateThread(function()
                         if not isTakingKeys then
                             isTakingKeys = true
                             SetVehicleDoorsLocked(entering, 1)
-                            QBCore.Functions.Progressbar("steal_keys", "Prendendo le chiavi dal cadavere...", 2500, false, false, {
+                            QBCore.Functions.Progressbar("steal_keys", "taking the keys from the corpse...", 2500, false, false, {
                                 disableMovement = false,
                                 disableCarMovement = true,
                                 disableMouse = false,
