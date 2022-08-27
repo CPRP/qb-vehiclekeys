@@ -454,6 +454,7 @@ function Hotwire(vehicle, plate)
     SetTimeout(10000, function()
         AttemptPoliceAlert("steal")
     end)
+    IsHotwiring = false
 end
 
 function CarjackVehicle(target)
