@@ -88,7 +88,7 @@ CreateThread(function()
                 local vehicle = GetVehiclePedIsIn(ped)
                 local plate = QBCore.Functions.GetPlate(vehicle)
 
-                if GetPedInVehicleSeat(vehicle, -1) == PlayerPedId() and not HasKeys(plate) and not isBlacklistedVehicle(vehicle) then
+                if GetPedInVehicleSeat(vehicle, -1) == PlayerPedId() and not HasKeys(plate) and not isBlacklistedVehicle(vehicle) and not AreKeysJobShared(vehicle) then
                     sleep = 0
 
                     local vehiclePos = GetOffsetFromEntityInWorldCoords(vehicle, 0.0, 1.0, 0.5)
@@ -151,6 +151,11 @@ end
 RegisterKeyMapping('togglelocks', Lang:t("info.tlock"), 'keyboard', 'L')
 RegisterCommand('togglelocks', function()
     ToggleVehicleLocks(GetVehicle())
+end)
+
+RegisterKeyMapping('engine', Lang:t("info.engine"), 'keyboard', 'G')
+RegisterCommand('engine', function()
+    TriggerEvent("qb-vehiclekeys:client:ToggleEngine")
 end)
 
 AddEventHandler('onResourceStart', function(resourceName)
@@ -296,12 +301,32 @@ function GetVehicle()
     return vehicle
 end
 
+function AreKeysJobShared(veh)
+    local vehName = GetDisplayNameFromVehicleModel(GetEntityModel(veh))
+    local vehPlate = GetVehicleNumberPlateText(veh)
+    local jobName = QBCore.Functions.GetPlayerData().job.name
+    local onDuty = QBCore.Functions.GetPlayerData().job.onduty
+    for job, v in pairs(Config.SharedKeys) do
+        if job == jobName then
+	    if Config.SharedKeys[job].requireOnduty and not onDuty then return false end
+	    for _, vehicle in pairs(v.vehicles) do
+	        if string.upper(vehicle) == vehName then
+		    if not HasKeys(vehPlate) then
+		        TriggerServerEvent("qb-vehiclekeys:server:AcquireVehicleKeys", vehPlate)
+		    end
+		    return true
+	        end
+            end
+        end
+    end
+    return false
+end
+
 function ToggleVehicleLocks(veh)
 
     if veh then
         if not isBlacklistedVehicle(veh) then
-            if HasKeys(QBCore.Functions.GetPlate(veh))  then
-                plate = QBCore.Functions.GetPlate(veh)
+            if HasKeys(QBCore.Functions.GetPlate(veh)) or AreKeysJobShared(veh) then
                 local ped = PlayerPedId()
                 local vehLockStatus = GetVehicleDoorLockStatus(veh)
 
